@@ -1,0 +1,31 @@
+<div class="col-12 mt-3">
+  <h4 class="text-center">Importação de Documentos</h4>
+</div>
+<div class="col-md-12">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label>Selecionar documento</label>
+        <select class="form-control" [(ngModel)]="documentType">
+          <option value="CAIXA_MENSAL">Mensal CDB Caixa Progressivo PJ</option>
+        </select>
+        <small class="form-text text-muted">Selecione o tipo de documento que se deseja gerar o excel</small>
+      </div>
+      <div class="form-group">
+        <label>Inserir arquivo para geração</label>
+        <div class="input-group mb-3">
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" (change)="handleFileInput($event.target.files)">
+            <label class="custom-file-label" for="inputGroupFile01">{{fileName}}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="center">
+    <file-drop headertext="Arraste e solte o arquivo aqui" (onFileDrop)="dropped($event)">
+    </file-drop>
+    <button type="button" class="btn btn-primary mt-4 mr-0" (click)="generateExcel()">
+      Gerar excel</button>
+  </div>
+</div>
