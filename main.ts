@@ -1,6 +1,9 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow, screen, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import * as pdf from 'pdf-parse';
+import { readFileSync } from 'fs';
+import { Nota } from './backend/model/nota';
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -50,6 +53,48 @@ try {
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
   app.on('ready', createWindow);
+
+  ipcMain.on('generateExcel', async (event, payload: { path: string, documentType: DocumentType }) => {
+    console.log(payload);
+    const buffer = readFileSync(payload.path);
+    const data = await pdf(buffer);
+    const regexDate = /((0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/[12]\d{3})/
+    const regexMoney = /([0-9]\.?)+,\d{2}/
+    const regexCDITaxes = /([0-9]\.?)+,\d{4}\s%\sCDI/g
+    console.log(data.info);
+    const lines = data.text.split('CAIXA, AQUI O SEU FUTURO ACONTECE!');
+    let pageCount = 0;
+    lines.forEach(l => {
+      if (l.length > 1) {
+        const linesSplitted = l.split('\n');
+        if (pageCount === 0) {
+          linesSplitted.shift();
+        }
+        const dates = linesSplitted[19].split(regexDate);
+        const valorBase = dates[8].match(regexMoney)[0];
+        const taxasCDI = dates[8].substring(valorBase.length, dates[8].length);
+
+        const nota = {
+          numNota: linesSplitted[15],
+          dtAplicacao: dates[1],
+          dtVencimento: dates[5],
+          valorBase,
+          taxaAtual: taxasCDI.match(regexCDITaxes)[0],
+          taxaFinal: taxasCDI.match(regexCDITaxes)[1],
+          rendBrutoAcum: '',
+          pgtRendBrutoAcum: '',
+          provisaoIR: '',
+          provisaoIOF: '',
+          rendLiquidAcum: '',
+          pgtRendLiquidAcum: '',
+          dtSaldo1: '',
+          dtSaldo2: '',
+        } as Nota;
+
+        console.log(pageCount++, nota);
+      }
+    });
+  });
 
   // Quit when all windows are closed.
   app.on('window-all-closed', () => {

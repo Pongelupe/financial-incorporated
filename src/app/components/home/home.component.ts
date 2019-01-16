@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FileSystemFileEntry, UploadEvent } from 'ngx-file-drop';
 import { DocumentType } from './enums/documentType';
+import { FileImportationService } from '../../providers/file-importation.service';
 
 @Component({
   selector: 'app-home',
@@ -13,7 +14,7 @@ export class HomeComponent {
   file: File;
   documentType = DocumentType.CAIXA_MENSAL;
 
-  constructor() { }
+  constructor(private fileImportationService: FileImportationService) { }
 
   public dropped(event: UploadEvent) {
     const entryFile = event.files[0].fileEntry as FileSystemFileEntry;
@@ -30,6 +31,7 @@ export class HomeComponent {
 
   generateExcel(): void {
     console.log(this);
+    this.fileImportationService.generateExcel({ path: this.file.path, documentType: this.documentType });
   }
 
 }
