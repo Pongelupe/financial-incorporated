@@ -3,7 +3,6 @@ import * as path from 'path';
 import * as url from 'url';
 import * as pdf from 'pdf-parse';
 import { readFileSync } from 'fs';
-import { Nota } from './backend/model/nota';
 import { NotaService } from './backend/service/nota-service';
 
 let win, serve;
