@@ -58,8 +58,9 @@ try {
     const data = await pdf(buffer);
     console.log(data.info);
     const notaService = new NotaService(app);
-    const notas = notaService.generateNotas(data.text);
+    const notas = await notaService.generateNotas(data.text);
     const pathExcel = await notaService.generateExcel(notas);
+    console.log(pathExcel);
     win.webContents.send('excelGenerated', pathExcel);
   });
 

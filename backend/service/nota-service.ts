@@ -15,7 +15,7 @@ export class NotaService {
 
     constructor(private app: App) { }
 
-    generateNotas(text: string): { notas: Nota[], header: any } {
+    async generateNotas(text: string): Promise<{ notas: Nota[], header: any }> {
         const lines = text.split('CAIXA, AQUI O SEU FUTURO ACONTECE!');
         let pageCount = 1;
         const notas: Nota[] = [];
@@ -78,17 +78,22 @@ export class NotaService {
         return +formattedNumber.replace('.', '').replace(',', '.');
     }
 
-    generateExcel(notas: { notas: Nota[]; header: any; }): string {
+    async generateExcel(notas: { notas: Nota[]; header: any; }): Promise<string> {
         const wb = new xl.Workbook();
         const ws = wb.addWorksheet(notas.header.document);
         this.prepareColumnWidth(ws);
         this.prepareLayout(wb, ws, notas);
         const path = `${this.app.getPath('temp')}/${this.prepareFileName(notas.header.dt2)}.xlsx`;
-        return wb.write(path
-            , (err, stats) => {
-                console.log(err, stats);
-                return path;
-            });
+        return new Promise<string>((resolve, reject) => {
+            wb.write(path
+                , (err, stats) => {
+                    console.log(err, stats);
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(path);
+                });
+        });
     }
 
     private prepareFileName(date: string): string {

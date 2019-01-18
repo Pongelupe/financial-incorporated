@@ -8,17 +8,13 @@ import { FileImportationService } from '../../providers/file-importation.service
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
 
   fileName = 'Escolha o arquivo';
   file: File;
   documentType = DocumentType.CAIXA_MENSAL;
 
   constructor(private fileImportationService: FileImportationService) { }
-
-  ngOnInit() {
-    window.require('electron').ipcRenderer.on('excelGenerated', (event, pathExcel) => this.fileImportationService.downloadExcel(pathExcel));
-  }
 
   public dropped(event: UploadEvent) {
     const entryFile = event.files[0].fileEntry as FileSystemFileEntry;
@@ -33,9 +29,10 @@ export class HomeComponent implements OnInit {
     this.fileName = this.file.name;
   }
 
-  generateExcel(): void {
+  async generateExcel(): Promise<void> {
     console.log(this);
-    this.fileImportationService.generateExcel({ path: this.file.path, documentType: this.documentType });
+    const path = await this.fileImportationService.generateExcel({ path: this.file.path, documentType: this.documentType });
+    console.log(path);
   }
 
 }

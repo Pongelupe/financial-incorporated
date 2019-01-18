@@ -11,12 +11,11 @@ export class FileImportationService extends ElectronService {
     super();
   }
 
-  generateExcel(payload: { path: string, documentType: DocumentType }): void {
-    this.ipcRenderer.send('generatedExcel', payload);
-  }
-
-  downloadExcel(path: string) {
-    console.log(path);
+  async generateExcel(payload: { path: string, documentType: DocumentType }): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      this.ipcRenderer.once('excelGenerated', (event, path) => resolve(path));
+      this.ipcRenderer.send('generateExcel', payload);
+    });
   }
 
 }
