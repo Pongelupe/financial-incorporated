@@ -7,9 +7,16 @@ import { DocumentType } from '../components/home/enums/documentType';
 })
 export class FileImportationService extends ElectronService {
 
-  constructor() { super(); }
+  constructor() {
+    super();
+  }
 
   generateExcel(payload: { path: string, documentType: DocumentType }): void {
-    this.ipcRenderer.send('generateExcel', payload);
+    this.ipcRenderer.send('generatedExcel', payload);
   }
+
+  downloadExcel(path: string) {
+    console.log(path);
+  }
+
 }

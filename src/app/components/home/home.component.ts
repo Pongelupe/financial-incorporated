@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FileSystemFileEntry, UploadEvent } from 'ngx-file-drop';
 import { DocumentType } from './enums/documentType';
 import { FileImportationService } from '../../providers/file-importation.service';
@@ -8,13 +8,17 @@ import { FileImportationService } from '../../providers/file-importation.service
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
 
   fileName = 'Escolha o arquivo';
   file: File;
   documentType = DocumentType.CAIXA_MENSAL;
 
   constructor(private fileImportationService: FileImportationService) { }
+
+  ngOnInit() {
+    window.require('electron').ipcRenderer.on('excelGenerated', (event, pathExcel) => this.fileImportationService.downloadExcel(pathExcel));
+  }
 
   public dropped(event: UploadEvent) {
     const entryFile = event.files[0].fileEntry as FileSystemFileEntry;

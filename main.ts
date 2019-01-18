@@ -35,8 +35,6 @@ function createWindow() {
     }));
   }
 
-  win.webContents.openDevTools();
-
   // Emitted when the window is closed.
   win.on('closed', () => {
     // Dereference the window object, usually you would store window
@@ -59,8 +57,10 @@ try {
     const buffer = readFileSync(payload.path);
     const data = await pdf(buffer);
     console.log(data.info);
-    const notaService = new NotaService();
-    console.log(notaService.generateNotas(data.text));
+    const notaService = new NotaService(app);
+    const notas = notaService.generateNotas(data.text);
+    const pathExcel = await notaService.generateExcel(notas);
+    win.webContents.send('excelGenerated', pathExcel);
   });
 
   // Quit when all windows are closed.
