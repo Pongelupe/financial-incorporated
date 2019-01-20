@@ -32,7 +32,7 @@
     ]
   },
   "linux": {
-    "icon": "dist",
+    "icon": "dist/diamond.png",
     "target": [
       "AppImage"
     ]
